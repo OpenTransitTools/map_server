@@ -1,0 +1,31 @@
+[@scale < 100000]
+[location_type = '0']  {
+    mark: symbol(circle);
+    mark-size: 6px;
+    :mark {
+        stroke: black;
+        fill: whitesmoke;
+    }
+}
+
+
+[@scale > 100000]
+[location_type = '0']  {
+    mark: symbol(circle);
+    mark-size: 9px;
+    :mark {
+        fill: black;
+        stroke: white;
+    }
+}
+
+
+[stop_code <> ''][location_type <> '0']  {
+    mark: symbol(square),symbol(cross);
+    mark-size: 16,14;
+    mark-rotation: 0,45;
+    :mark {
+        fill: palegreen;
+        stroke: black;
+    }
+}

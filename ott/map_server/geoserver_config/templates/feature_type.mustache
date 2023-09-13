@@ -1,0 +1,41 @@
+<featureType>
+  <id>{{featuretype_id}}</id>
+  <name>{{schema}}_{{type}}</name>
+  <nativeName>{{type}}</nativeName>
+  <namespace>
+    <id>{{namespace}}</id>
+  </namespace>
+  <title>{{schema}}_{{type}}</title>
+  <keywords>
+    <string>features</string>
+    <string>{{type}}</string>
+    <string>{{schema}}</string>
+  </keywords>
+  <srs>EPSG:{{epsg}}</srs>
+  <nativeBoundingBox>
+    <minx>{{minx}}</minx>
+    <maxx>{{maxx}}</maxx>
+    <miny>{{miny}}</miny>
+    <maxy>{{maxy}}</maxy>
+  </nativeBoundingBox>
+  <latLonBoundingBox>
+    <crs>EPSG:{{epsg}}</crs>
+    <minx>{{minx}}</minx>
+    <maxx>{{maxx}}</maxx>
+    <miny>{{miny}}</miny>
+    <maxy>{{maxy}}</maxy>
+  </latLonBoundingBox>
+  <projectionPolicy>FORCE_DECLARED</projectionPolicy>
+  <enabled>true</enabled>
+  <metadata>
+    <entry key="cachingEnabled">false</entry>
+  </metadata>
+  <store class="dataStore">
+    <id>{{store_id}}</id>
+  </store>
+  <maxFeatures>0</maxFeatures>
+  <numDecimals>0</numDecimals>
+  <overridingServiceSRS>false</overridingServiceSRS>
+  <skipNumberMatched>false</skipNumberMatched>
+  <circularArcPresent>false</circularArcPresent>
+</featureType>

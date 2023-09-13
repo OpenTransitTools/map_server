@@ -1,0 +1,38 @@
+<dataStore>
+  <id>{{store_id}}</id>
+  <name>{{schema}}</name>
+  <description>OpenTransitTools GTFS Database Table {{db_name}}.{{schema}}</description>
+  <type>PostGIS</type>
+  <enabled>true</enabled>
+  <workspace>
+    <id>{{workspace}}</id>
+  </workspace>
+  <connectionParameters>
+    <entry key="user">{{user}}</entry>
+    <entry key="database">{{db_name}}</entry>
+    <entry key="schema">{{schema}}</entry>
+    <entry key="port">5432</entry>
+    <entry key="host">localhost</entry>
+    <entry key="Evictor run periodicity">300</entry>
+    <entry key="Max open prepared statements">50</entry>
+    <entry key="encode functions">false</entry>
+    <entry key="Batch insert size">1</entry>
+    <entry key="preparedStatements">false</entry>
+    <entry key="Loose bbox">true</entry>
+    <entry key="Estimated extends">true</entry>
+    <entry key="fetch size">1000</entry>
+    <entry key="Expose primary keys">true</entry>
+    <entry key="validate connections">true</entry>
+    <entry key="Support on the fly geometry simplification">true</entry>
+    <entry key="Connection timeout">20</entry>
+    <entry key="create database">false</entry>
+    <entry key="min connections">1</entry>
+    <entry key="dbtype">postgis</entry>
+    <entry key="namespace">http://opentransittools.org</entry>
+    <entry key="max connections">10</entry>
+    <entry key="Evictor tests per run">3</entry>
+    <entry key="Test while idle">true</entry>
+    <entry key="Max connection idle time">300</entry>
+  </connectionParameters>
+  <__default>false</__default>
+</dataStore>

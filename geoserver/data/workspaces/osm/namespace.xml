@@ -1,0 +1,5 @@
+<namespace>
+  <id>OsmNamespace</id>
+  <prefix>osm</prefix>
+  <uri>https://github.com/OpenTransitTools/osm</uri>
+</namespace>

@@ -1,0 +1,43 @@
+* { 
+  font-family: "GillSans-Light";
+  font-weight: normal;
+  font-fill: #484848;
+  halo-color: white;
+  halo-radius: 1;
+  -gt-label-follow-line: true;
+  -gt-label-max-angle-delta: 90;
+  -gt-label-max-displacement: 400;
+  -gt-label-repeat: 300;
+  stroke-linecap: round;
+}
+
+[@scale < 50001] [@scale > 25001] {
+  stroke: #dad7d6;
+  stroke-opacity: 0.5;
+  stroke-width: 0.1;
+}
+
+[@scale < 25001] [@scale > 10001] {
+  stroke: #8f8f8f, #dad7d6;
+  stroke-opacity: 0.5, 1;
+  stroke-width: 0.5, 0.3;
+  z-index: 0, 1;
+}
+
+[@scale < 10001] [@scale > 5001]{
+  stroke: #8f8f8f, #dad7d6;
+  stroke-opacity: 0.5, 1;
+  stroke-width: 2, 1.5;
+  z-index: 0, 1;
+  label: [name];
+  font-size: 6;
+}
+
+[@scale < 5001] {
+  stroke: #8f8f8f, #dad7d6;
+  stroke-opacity: 0.5, 1;
+  stroke-width: 3.5, 3;
+  z-index: 0, 1;
+  label: [name];
+  font-size: 7;
+}
