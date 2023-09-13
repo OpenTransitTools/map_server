@@ -1,4 +1,4 @@
-VER=2.17
+VER=2.22.5
 
 EXT_PLUGINS="imagemosaic-jdbc-plugin css-plugin vectortiles-plugin mbstyle-plugin"
 COM_PLUGINS=""
