@@ -85,18 +85,22 @@ def get_data(db_name='ott', schema='TRIMET', user='ott', is_LatLon=True, do_name
 def generate_geoserver_config():
     # step 1: args
     args = osm_cmdline.geoserver_parser()
-    do_layergroup = not args.ignore_layergroups
 
     # step 2: layer gen
-    from . import osm_config
-    from . import style_config
     from . import transit_config
-    style_config.generate(args.data_dir)
-    transit_config.generate(args.data_dir, gen_layergroup=do_layergroup)
-    osm_config.generate(args.data_dir, gen_layergroup=do_layergroup)
+    transit_config.generate(args.data_dir, gen_layergroup=args.do_layergroup)
+
+    if args.do_osm:
+        from . import osm_config
+        osm_config.generate(args.data_dir, gen_layergroup=args.do_layergroup)
+
+    if args.do_styles:
+        from . import style_config
+        style_config.generate(args.data_dir)
+
 
     # step 3: create a new layergroup with both map and transit routes
-    if do_layergroup:
+    if args.do_layergroup:
         # FYI: very important to get the details (layer group ids correct) below, else GS will throw exceptions
         d = get_data(is_LatLon=False, do_namepace=False)
         d['published_type'] = "layerGroup"
