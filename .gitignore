@@ -4,7 +4,8 @@ otp_report.html
 build-config.json
 router-config.json
 lucene
-geoserver
+geoserver*
+data_dir*
 *.old
 *-old
 *.urls
