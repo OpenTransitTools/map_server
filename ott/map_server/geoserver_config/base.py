@@ -76,8 +76,8 @@ def get_data(db_name='ott', schema='TRIMET', user='ott', is_LatLon=True, do_name
         'epsg':   4326 if is_LatLon else 3857
     }
     if do_namepace:
-        v['namespace'] = db_name.capitalize() + 'Namespace'
-        v['workspace'] = db_name.capitalize() + 'Workspace'
+        v['namespace'] = db_name + '-namespace'
+        v['workspace'] = db_name + '-workspace'
 
     return v
 
