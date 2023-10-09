@@ -1,6 +1,6 @@
 from ott.utils import gtfs_utils
 from ott.utils import file_utils
-from .style_config import make_id
+from .style_config import make_style_id
 from .templates.template import Template
 from .base import get_data, make_layergroup, make_feature
 
@@ -10,7 +10,8 @@ log = logging.getLogger(__file__)
 
 
 def generate(data_dir="geoserver/data", workspace="ott", gen_layergroup=True):
-    """ gen geoserver stuff
+    """ 
+    gen geoserver stuff
     """
     # lists for the layergroups.xml config
     routes_layers = []
@@ -34,8 +35,8 @@ def generate(data_dir="geoserver/data", workspace="ott", gen_layergroup=True):
             f.write(content)
 
         # step 4: make stop and route feature layers
-        routes_style_id = make_id('routes')
-        stops_style_id = make_id('stops')
+        routes_style_id = make_style_id('routes')
+        stops_style_id = make_style_id('stops')
         r = make_feature(dir_path, data, 'routes', routes_style_id)
         s = make_feature(dir_path, data, 'stops',  stops_style_id)
         routes_layers.append(r)
