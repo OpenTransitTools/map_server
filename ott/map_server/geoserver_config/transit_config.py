@@ -1,6 +1,5 @@
 from ott.utils import gtfs_utils
 from ott.utils import file_utils
-from .style_config import make_style_id
 from .templates.template import Template
 from .base import get_data, make_layergroup, make_feature
 
@@ -9,7 +8,13 @@ import logging
 log = logging.getLogger(__file__)
 
 
-def generate(data_dir="geoserver/data", workspace="ott", gen_layergroup=True):
+def make_style_id(name, prefix='ott', suffix='style'):
+    """ produces ott-routes-style """
+    id = "{}-{}-{}".format(prefix, name, suffix)
+    return id
+
+
+def generate(data_dir="data_dir", workspace="ott"):
     """ 
     gen geoserver stuff
     """
@@ -43,13 +48,20 @@ def generate(data_dir="geoserver/data", workspace="ott", gen_layergroup=True):
         stops_layers.append(s)
 
 
-    # step 5: make inclusive layergroups
-    if gen_layergroup:
-        data['workspace'] = None
-        make_layergroup(data_dir, data, routes_layers, type_name='routes')
-        make_layergroup(data_dir, data, stops_layers, type_name='stops')
+    # step 5: make agency inclusive layergroups
+    all_layers = []
+    all_layers.extend(routes_layers)
+    all_layers.extend(stops_layers)
 
-        all_layers = []
-        all_layers.extend(routes_layers)
-        all_layers.extend(stops_layers)
-        make_layergroup(data_dir, data, all_layers, type_name='routes_n_stops')
+    data['workspace'] = None
+    make_layergroup(workspace_path, data, routes_layers, type_name='routes')
+    make_layergroup(workspace_path, data, stops_layers, type_name='stops')
+    make_layergroup(workspace_path, data, all_layers, type_name='routes_n_stops')
+
+
+def generate_geoserver_config():
+    """ generate geoserver config for transit """
+    from ott.utils.parse.cmdline import osm_cmdline
+
+    args = osm_cmdline.geoserver_parser()
+    generate(args.data_dir)

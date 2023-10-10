@@ -1,5 +1,4 @@
 from ott.utils import file_utils
-from ott.utils.parse.cmdline import osm_cmdline
 from .templates.template import Template
 
 import os
@@ -34,14 +33,6 @@ def make_feature(base_dir, data, type_name, style_id):
         f.write(content)
 
     return {'layer_id': data['layer_id'], 'style_id': style_id}
-
-
-def change_style_color(layer_style_list, frm="Color", to="Gray"):
-    """ for layergroups, we have a layer/style paried list ... this routine will rename the style items """
-    # import pdb; pdb.set_trace()
-    for l in layer_style_list:
-        s = l['style_id'].replace(frm, to, 1)
-        l['style_id'] = s
 
 
 def make_layergroup(base_dir, data, layers, type_name):
@@ -80,32 +71,3 @@ def get_data(db_name='ott', schema='TRIMET', user='ott', is_LatLon=True, do_name
         v['workspace'] = db_name + '-workspace'
 
     return v
-
-
-def generate_geoserver_config():
-    # step 1: args
-    args = osm_cmdline.geoserver_parser()
-
-    # step 2: layer gen
-    from . import transit_config
-    transit_config.generate(args.data_dir, gen_layergroup=args.do_layergroup)
-
-    if args.do_osm:
-        from . import osm_config
-        osm_config.generate(args.data_dir, gen_layergroup=args.do_layergroup)
-
-    if args.do_styles:
-        from . import style_config
-        style_config.generate(args.data_dir)
-
-
-    # step 3: create a new layergroup with both map and transit routes
-    if args.do_layergroup:
-        # FYI: very important to get the details (layer group ids correct) below, else GS will throw exceptions
-        d = get_data(is_LatLon=False, do_namepace=False)
-        d['published_type'] = "layerGroup"
-        l = [{'layer_id':'osm-map-layergroup'}, {'layer_id':'ott-routes-layergroup'}]
-        make_layergroup(args.data_dir, d, l, 'transit-map')
-
-        l = [{'layer_id':'osm-map-gray-layergroup'}, {'layer_id':'ott-routes-layergroup'}]
-        make_layergroup(args.data_dir, d, l, 'transit-map-gray')

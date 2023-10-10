@@ -47,7 +47,6 @@ setup(
     test_suite="ott.map_server.tests",
     entry_points="""
         [console_scripts]
-        generate_geoserver_config = ott.map_server.geoserver_config.base:generate_geoserver_config
-        run_jetty_config = ott.map_server.geoserver_config.jetty_config:run_jetty_config
+        generate_geoserver_config = ott.map_server.geoserver_config.transit_config:generate_geoserver_config
     """,
 )
