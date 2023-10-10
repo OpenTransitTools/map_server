@@ -1,9 +1,0 @@
-{
-  "tilejson": "2.2.0",
-  "name": "map",
-  "tiles": [
-    "http://localhost:10101/geoserver/gwc/service/wmts?REQUEST=GetTile&SERVICE=WMTS&VERSION=1.0.0&LAYER=map&STYLE=&TILEMATRIX=EPSG:900913:{z}&TILEMATRIXSET=EPSG:900913&FORMAT=application/vnd.mapbox-vector-tile&TILECOL={x}&TILEROW={y}"
-  ],
-  "minZoom": 0,
-  "maxZoom": 22
-}
