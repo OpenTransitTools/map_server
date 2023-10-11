@@ -10,9 +10,10 @@
   <connectionParameters>
     <entry key="user">{{user}}</entry>
     <entry key="database">{{db_name}}</entry>
-    <entry key="schema">{{schema}}</entry>
-    <entry key="port">5432</entry>
     <entry key="host">localhost</entry>
+    <entry key="port">5432</entry>
+    <entry key="schema">{{schema}}</entry>
+    <entry key="dbtype">postgis</entry>    
     <entry key="Evictor run periodicity">300</entry>
     <entry key="Max open prepared statements">50</entry>
     <entry key="encode functions">false</entry>
@@ -27,7 +28,6 @@
     <entry key="Connection timeout">20</entry>
     <entry key="create database">false</entry>
     <entry key="min connections">1</entry>
-    <entry key="dbtype">postgis</entry>
     <entry key="namespace">http://opentransittools.org</entry>
     <entry key="max connections">10</entry>
     <entry key="Evictor tests per run">3</entry>
@@ -35,6 +35,6 @@
     <entry key="Max connection idle time">300</entry>
   </connectionParameters>
   <__default>false</__default>
-  <dateCreated>2023-09-28 22:31:45.51 UTC</dateCreated>
-  <dateModified>2023-09-28 22:32:11.364 UTC</dateModified>
+  <dateCreated>{{utcnow}}</dateCreated>
+  <dateModified>{{utcnow}}</dateModified>
 </dataStore>
