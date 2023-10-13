@@ -54,13 +54,14 @@ def make_layergroup(base_dir, data, layers, type_name):
         f.write(content)
 
 
-def get_data(db_name='ott', db_port='5432', db_url='localhost', schema='TRIMET', user='ott', is_LatLon=True, do_namepace=True, **kwargs):
+def get_data(db_name='ott', db_port='5432', db_url='localhost', schema='TRIMET', db_user='ott', db_pass=None, is_LatLon=True, do_namepace=True, **kwargs):
     v = {
         'db_name': db_name,
         'db_port': db_port,
         'db_url': db_url,
         'schema': schema,
-        'user':  user,
+        'user':  db_user,
+        'password':  db_pass,
         'store_id': "{}-{}-datastore".format(db_name, schema),
         'minx': -123.1 if is_LatLon else -13703429.32,
         'maxx': -121.1 if is_LatLon else -13480790.34,

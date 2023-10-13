@@ -9,6 +9,9 @@
   </workspace>
   <connectionParameters>
     <entry key="user">{{user}}</entry>
+    {{#password}}
+    <entry key="passwd">{{password}}</entry>
+    {{/password}}
     <entry key="database">{{db_name}}</entry>
     <entry key="host">{{db_url}}</entry>
     <entry key="port">{{db_port}}</entry>
