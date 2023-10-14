@@ -1,0 +1,383 @@
+<!DOCTYPE html>
+<!-- note: much of the code / style ideas taken from various examples of mapbox's gl js -->
+<html>
+  <head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Stop Segments</title>
+  <link rel="stylesheet" type="text/css" href="https://tiles.trimet.org/maplibre-gl.css" />
+  <script src="https://tiles.trimet.org/maplibre-gl.js"></script>
+  <script>var mapboxgl=maplibregl;</script>
+  <script src="https://joxit.dev/pelias-mapbox-gl-js/pelias-geocoder.js"></script>
+  <link   href='https://joxit.dev/pelias-mapbox-gl-js/pelias-geocoder.css' rel='stylesheet'  type='text/css'/>
+  <style>
+    body { margin:0; padding:0; }
+    #map { position:absolute; top:0; bottom:0; width:100%; }
+    .pelias-ctrl input {
+      font: 400 12px 'Roboto Regular', 'Helvetica Neue', Arial, Helvetica, sans-serif;
+    }
+    .marker-arrow {
+      width: 30px;
+      height: 30px;
+      border-radius: 50% 50% 50% 0;
+      background-color: #ec8100;
+      transform: rotate(-45deg);
+      margin: -36px 0 0 0;
+    }
+    .marker-arrow::after {
+      content: '';
+      width: 14px;
+      height: 14px;
+      margin: 8px 0 0 8px;
+      background-color: #fff;
+      position: absolute;
+      border-radius: 50%;
+    }
+
+    #menu {
+      background: #fff;
+      position: absolute;
+      z-index: 1;
+      top: 10px;
+      right: 60px;
+      border-radius: 3px;
+      width: 120px;
+      border: 1px solid rgba(0, 0, 0, 0.4);
+      font-family: 'Open Sans', sans-serif;
+    }
+    #menu a {
+      font-size: 13px;
+      color: #404040;
+      display: block;
+      margin: 0;
+      padding: 0;
+      padding: 10px;
+      text-decoration: none;
+      border-bottom: 1px solid rgba(0, 0, 0, 0.25);
+      text-align: center;
+    }
+    #menu a:last-child {
+      border: none;
+    }
+    #menu a:hover {
+      background-color: #f8f8f8;
+      color: #404040;
+    }
+    #menu a.active {
+      background-color: #3887be;
+      color: #ffffff;
+    }
+    #menu a.active:hover {
+      background: #3074a4;
+    }
+  </style>
+</head>
+<body>
+  <h1 style="display:none;">TriMet Stop Segments</h1>
+  <nav id="menu"></nav>
+  <div id='map'></div>
+  <script>
+    function getUrlParam(name, defVal) {
+      var retVal;
+      try {
+        const params = new URLSearchParams(window.location.search);
+        retVal = params.get(name);
+        if(retVal === null)
+          retVal = defVal;
+      } catch (e) {
+        retVal = defVal;
+      }
+      return retVal;
+    }
+
+    var segmentsGeojson = getUrlParam('segments', 'trimet.geojson');
+
+    var url = 'https://tiles.trimet.org/styles/trimet/style.json';
+    var customAttrib = '&copy;OpenTransitTools &copy;OpenStreetMap';
+    var render_above_this_layer = 'road_major_label'
+    // NOTE: 'road_major_label' is in the base layer style .. put here renders that above this layer
+
+    if(segmentsGeojson !== 'trimet.geojson' && segmentsGeojson !== 'ctran.geojson') {
+      url = "https://api.maptiler.com/maps/bright/style.json?key=wUvV014mmfzELsh6ucYT";
+      url = "https://api.maptiler.com/maps/voyager/style.json?key=wUvV014mmfzELsh6ucYT";
+      customAttrib = '&copy;MapTiler &copy;OpenStreetMap';
+      render_above_this_layer = 'place_hamlet';
+    }
+
+    var map = new maplibregl.Map({
+      container: 'map',
+      style: url,
+      pitch: 90,
+      antialias: true,
+      hash: true,
+      attributionControl: false
+    });
+
+    var scale = new maplibregl.ScaleControl({
+      maxWidth: 80,
+      unit: 'imperial'
+    });
+
+    var attrib = new maplibregl.AttributionControl({
+      compact: true,
+      customAttribution: '© <a target="_" href="https://tiles.trimet.org">TriMet</a> '
+    });
+
+    var full = new maplibregl.FullscreenControl();
+
+    var nav = new maplibregl.NavigationControl({
+      visualizePitch: true
+    });
+
+    var geo = new maplibregl.GeolocateControl({
+      positionOptions: {
+        enableHighAccuracy: true
+      },
+      trackUserLocation: true
+    });
+
+    var iconMarkerEl = document.createElement("div");
+    iconMarkerEl.innerHTML = "<div class='marker-arrow'></div>" + "<div class='marker-pulse'></div>";
+    var pelias = new PeliasGeocoder({
+      url: 'https://ws.trimet.org/peliaswrap/v1',
+      flyTo: 'hybrid',
+      useFocusPoint: true,
+      marker: {
+        icon: iconMarkerEl,
+        multiple: false
+      },
+      customAttribution: customAttrib
+    });
+
+    map.addControl(nav);
+    map.addControl(scale);
+    map.addControl(pelias);
+    map.addControl(attrib);
+    map.addControl(full, 'bottom-right');
+    map.addControl(geo,  'bottom-right');
+
+    map.on('load', function () {
+      document.title = document.title + " - " + segmentsGeojson;
+
+      map.addSource('segments', {
+        type: 'geojson',
+        data: segmentsGeojson,
+        buffer: 0,
+        maxzoom: 20
+      });
+
+      map.addLayer({
+        'id': 'traffic_segments',
+        'type': 'line',
+        'source': 'segments',
+        'layout': {
+          'visibility': 'visible',
+          'line-join': 'round',
+          'line-cap': 'round'
+        },
+        'paint': {
+          'line-opacity': 0.4,
+          'line-color': '#1b8dff',
+          'line-width': 8
+        },
+        'filter': ['all', ['==', '$type', 'LineString'], ['==', 'layer', 'traffic']]
+      }, render_above_this_layer);
+
+      map.addLayer({
+        'id': 'stop_segments',
+        'type': 'line',
+        'source': 'segments',
+        'layout': {
+          'visibility': 'visible',
+          'line-join': 'round',
+          'line-cap': 'round'
+        },
+        'paint': {
+          'line-opacity': 0.6,
+          'line-color': '#ece90d',
+          'line-width': 4
+        },
+        'filter': ['all', ['==', '$type', 'LineString'], ['==', 'layer', 'stop']]
+      }, render_above_this_layer);
+
+      map.addLayer({
+        'id': 'stops',
+        'type': 'circle',
+        'source': 'segments',
+        'layout': {
+          'visibility': 'visible'
+        },
+        'paint': {
+          'circle-color': '#bfec46',
+          'circle-radius': { stops: [[8, 0.5], [11, 3], [16, 6]] }
+        },
+        'filter': ['==', '$type', 'Point']
+      }, render_above_this_layer);
+
+      map.addLayer({
+        'id': 'segments-highlighted',
+        'type': 'line',
+        'source': 'segments',
+        'paint': {
+          'line-opacity': 0.9,
+          'line-color': '#ec352a',
+          'line-width': 4
+        },
+        'filter': ['in', 'id', '']
+      });
+
+      map.addLayer({
+        'id': 'symbols-highlighted',
+        'type': 'symbol',
+        'source': 'segments',
+        'layout': {
+            'symbol-placement': 'line',
+            'text-font': ['Open Sans Regular'],
+            'text-field': ['get', 'code'],
+            'text-size': { stops: [[8, 2], [11, 12], [16, 18]] }
+        },
+        'filter': ['in', 'id', '']
+      });
+
+      var tooltip = new maplibregl.Popup({
+        closeButton: false,
+        closeOnClick: false
+      });
+
+      map.on('mouseenter', 'stops', function (e) {
+        // Change the cursor style as a UI indicator.
+        map.getCanvas().style.cursor = 'pointer';
+
+        var coordinates = e.features[0].geometry.coordinates.slice();
+        var description = "Stop ID: " + e.features[0].properties.code;
+
+        // Ensure that if the map is zoomed out such that multiple
+        // copies of the feature are visible, the popup appears
+        // over the copy being pointed to.
+        while (Math.abs(e.lngLat.lng - coordinates[0]) > 180) {
+          coordinates[0] += e.lngLat.lng > coordinates[0] ? 360 : -360;
+        }
+
+        // Populate the popup and set its coordinates
+        // based on the feature found.
+        tooltip.setLngLat(coordinates).setHTML(description).addTo(map);
+      });
+
+      map.on('mouseleave', 'stops', function () {
+         map.getCanvas().style.cursor = '';
+        tooltip.remove();
+      });
+
+      map.on('dblclick', 'stops', function (e) {
+        var stopPage = "https://trimet.org/ride/stop.html?stop_id=";
+        var url = stopPage + e.features[0].properties.id;
+        window.open(url, "_blank");
+      });
+
+      var popup = new maplibregl.Popup({closeOnClick: false});
+      map.on('contextmenu', function(e) {
+        tooltip.remove();
+
+        var coord = e.lngLat;
+        var sv = '<iframe width="420" height="280" frameborder="0" scrolling="no" marginheight="0" marginwidth="0" ' +
+        'src="https://maps.google.com/maps?output=svembed&amp;&amp;layer=c&amp;cbp=13,,,,&amp;' +
+        'cbll=' + coord.lat + ',' + coord.lng + '&amp;ll=' + coord.lat + ',' + coord.lng + '&amp;z=17"></iframe>' +
+        "location: " + coord.lat + ',' + coord.lng;
+
+        popup.setLngLat(coord).setMaxWidth("450px").setHTML(sv).addTo(map);
+      });
+
+      // cycle thru lines by multiple repeated clicks to same map section
+      var f = null;
+      var i = 0;
+      const equals = (a, b) => JSON.stringify(a) === JSON.stringify(b);
+
+      map.on('click', function (e) {
+
+        // set bbox as 5px reactangle area around clicked point
+        var bbox = [
+          [e.point.x - 5, e.point.y - 5],
+          [e.point.x + 5, e.point.y + 5]
+        ];
+        var features = map.queryRenderedFeatures(bbox, { layers: ['stop_segments', 'traffic_segments']});
+
+        //debugger;
+        if(features && features.length > 0) {
+          popup.remove();
+          tooltip.remove();
+
+          if (i < features.length && equals(f, features)) {
+            features = [f[i]];
+            i++;
+          } else {
+            f = features;
+            i = 0;
+          }
+        }
+
+        // Run through the selected features and set a filter to match features with unique id
+        // codes to activate the `counties-highlighted` layer.
+        // console.log(features);
+        var filter = features.reduce(
+          function (memo, feature) {
+            var id = feature.properties.id;
+            memo.push(id);
+            return memo;
+          },
+          ['in', 'id']
+        );
+
+        map.setFilter('segments-highlighted', filter);
+        map.setFilter('symbols-highlighted', filter);
+      });
+    });
+
+    function makeMenu(toggleableLayerIds) {
+      // set up the corresponding toggle button for each layer
+      for (var i = 0; i < toggleableLayerIds.length; i++) {
+        var id = toggleableLayerIds[i];
+
+        var link = document.createElement('a');
+        link.href = '#';
+        link.className = 'active';
+        link.textContent = id;
+
+        link.onclick = function (e) {
+          var clickedLayer = this.textContent;
+          e.preventDefault();
+          e.stopPropagation();
+
+          var visibility = map.getLayoutProperty(clickedLayer, 'visibility');
+
+          // toggle layer visibility by changing the layout object's visibility property
+          if (visibility === 'visible') {
+            map.setLayoutProperty(clickedLayer, 'visibility', 'none');
+            this.className = '';
+          } else {
+            this.className = 'active';
+            map.setLayoutProperty(clickedLayer, 'visibility', 'visible');
+          }
+        };
+
+        var layers = document.getElementById('menu');
+        layers.appendChild(link);
+      }
+    }
+
+    makeMenu(['stop_segments', 'traffic_segments', 'stops']);
+
+    /** code below will (hackily) pan to the .geojson layer */
+    /* commenting this out for now ... better to just provide coords to center of interest rather
+       than pan to a random spot on the .geojson layer
+    setTimeout(() => {
+      var features = map.querySourceFeatures('segments', { 'filter': ['==', '$type', 'Point']} );
+      var coordinates = features[0].geometry.coordinates;
+      map.setCenter(coordinates);
+      map.setZoom(10.0);
+      //var bounds = new mapboxgl.LngLatBounds(coordinates[0], coordinates[1]);
+      //map.fitBounds(bounds, { padding: 200 });
+    }, 3000);
+    */
+  </script>
+</body>
+</html>
