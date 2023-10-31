@@ -63,6 +63,14 @@ def generate(args):
 def generate_geoserver_config():
     """ generate geoserver config for transit """
     from ott.utils.parse.cmdline import osm_cmdline
+    from ott.utils import config_util
+    #import pdb; pdb.set_trace()
+    params = ['db_user', 'db_pass', 'db_name', 'db_port', 'db_geoserver']
+    def_params = config_util.get_params_from_config(params)
 
-    args = osm_cmdline.geoserver_parser()
+    def_params['workspace'] = def_params.get('db_user', 'ott')
+    def_params['db_url'] = def_params.get('db_geoserver', 'localhost')
+    def_params['dir'] = "data_dir"
+
+    args = osm_cmdline.geoserver_parser(def_params)
     generate(args)
