@@ -74,3 +74,13 @@ def generate_geoserver_config():
 
     args = osm_cmdline.geoserver_parser(def_params)
     generate(args)
+
+
+def get_agency_list():
+    feed_list = gtfs_utils.get_feeds_from_config()
+    list = []
+    for f in feed_list:
+        s = gtfs_utils.get_schema_name_from_feed(f)
+        list.append(s)
+
+    print(list)

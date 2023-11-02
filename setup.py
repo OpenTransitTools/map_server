@@ -48,5 +48,6 @@ setup(
     entry_points="""
         [console_scripts]
         generate_geoserver_config = ott.map_server.geoserver_config.transit_config:generate_geoserver_config
+        get_agencies = ott.map_server.geoserver_config.transit_config:get_agency_list
     """,
 )
