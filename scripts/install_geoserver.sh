@@ -1,7 +1,7 @@
 VER=2.24
 
-EXT_PLUGINS="imagemosaic-jdbc-plugin css-plugin vectortiles-plugin mbstyle-plugin"
-COM_PLUGINS=""
+EXT_PLUGINS="css-plugin vectortiles-plugin mbstyle-plugin"
+COM_PLUGINS="gwc-mbtiles-plugin"
 
 if [ -d "geoserver" ];
 then
@@ -26,7 +26,8 @@ then
     done
 fi
 
-unzip geoserver.zip
+mkdir geoserver
+unzip geoserver.zip -d ./geoserver/
 rm geoserver.zip
 
 for p in $EXT_PLUGINS $COM_PLUGINS
@@ -37,6 +38,10 @@ done
 
 rm -rf geoserver/data
 rm -rf geoserver/data_dir
+
+# if map previews do not render (and you get sun.java2d.SurfaceData exceptions)
+# see: https://gis.stackexchange.com/questions/402613/layer-preview-not-working-at-all-on-geoserver
+rm geoserver/webapps/geoserver/WEB-INF/lib/marlin-0.9.3.jar
 
 echo "**** DO THIS TO GET geoserver UP & RUNNING ****"
 echo
