@@ -15,41 +15,51 @@ def make_style_id(name, prefix='ott', suffix='style'):
     return id
 
 
+def generate_config(data, workspace_path, schema_name):
+    r = s = None
+
+    # step 2: make datasource folder for each schema
+    dir_path = os.path.join(workspace_path, schema_name)
+    file_utils.mkdir(dir_path)
+
+    # step 3: make the datastore config for the source
+    ds_path = os.path.join(dir_path, 'datastore.xml')
+    with open(ds_path, 'w+') as f:
+        content = Template.data_store(data)
+        f.write(content)
+
+    # step 4: make stop and route feature layers
+    routes_style_id = make_style_id('routes')
+    stops_style_id = make_style_id('stops')
+    r = make_feature(dir_path, data, 'routes', routes_style_id)
+    s = make_feature(dir_path, data, 'stops',  stops_style_id)
+
+    return r, s
+
 def generate(args):
     """ 
     gen geoserver stuff
     """
-    # lists for the layergroups.xml config
-    routes_layers = []
+    routes_layers = []  # _layers will store the layers for the layergroups.xml config
     stops_layers = []
+
     workspace_path = os.path.join(args.data_dir, "workspaces", args.workspace)
 
+    # current schema layers
+    data = get_data(schema='current', **vars(args))
+    generate_config(data, workspace_path, 'current')
+
+    # agency layer schema layers
     feed_list = gtfs_utils.get_feeds_from_config()
     for feed in feed_list:
         # step 1: get meta data and name for this feed
         schema_name = gtfs_utils.get_schema_name_from_feed(feed)
         data = get_data(schema=schema_name, **vars(args))
-
-        # step 2: make datasource folder for each schema
-        dir_path = os.path.join(workspace_path, schema_name)
-        file_utils.mkdir(dir_path)
-
-        # step 3: make the datastore config for the source
-        ds_path = os.path.join(dir_path, 'datastore.xml')
-        with open(ds_path, 'w+') as f:
-            content = Template.data_store(data)
-            f.write(content)
-
-        # step 4: make stop and route feature layers
-        routes_style_id = make_style_id('routes')
-        stops_style_id = make_style_id('stops')
-        r = make_feature(dir_path, data, 'routes', routes_style_id)
-        s = make_feature(dir_path, data, 'stops',  stops_style_id)
+        r, s = generate_config(data, workspace_path, schema_name)
         routes_layers.append(r)
         stops_layers.append(s)
 
-
-    # step 5: make agency inclusive layergroups
+    # make inclusive layergroups
     all_layers = []
     all_layers.extend(routes_layers)
     all_layers.extend(stops_layers)
