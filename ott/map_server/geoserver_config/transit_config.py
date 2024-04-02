@@ -47,7 +47,8 @@ def generate(args):
 
     # current schema layers
     data = get_data(schema='current', **vars(args))
-    generate_config(data, workspace_path, 'current')
+    r, s = generate_config(data, workspace_path, 'current')
+    make_layergroup(workspace_path, data, [r, s], type_name='current_routes_n_stops')
 
     # agency layer schema layers
     feed_list = gtfs_utils.get_feeds_from_config()
@@ -65,9 +66,7 @@ def generate(args):
     all_layers.extend(stops_layers)
 
     data['workspace'] = None
-    make_layergroup(workspace_path, data, routes_layers, type_name='routes')
-    make_layergroup(workspace_path, data, stops_layers, type_name='stops')
-    make_layergroup(workspace_path, data, all_layers, type_name='routes_n_stops')
+    make_layergroup(workspace_path, data, all_layers, type_name='raw_routes_n_stops')
 
 
 def generate_geoserver_config():
