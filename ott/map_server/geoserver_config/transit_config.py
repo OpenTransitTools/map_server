@@ -15,7 +15,7 @@ def make_style_id(name, prefix='ott', suffix='style'):
     return id
 
 
-def generate_config(data, workspace_path, schema_name):
+def generate_config(data, workspace_path, schema_name, flex_name=None):
     r = s = None
 
     # step 2: make datasource folder for each schema
@@ -33,8 +33,12 @@ def generate_config(data, workspace_path, schema_name):
     stops_style_id = make_style_id('stops')
     r = make_feature(dir_path, data, 'routes', routes_style_id)
     s = make_feature(dir_path, data, 'stops',  stops_style_id)
+    f = None
+    if flex_name:
+        flex_style_id = make_style_id('flex')
+        f = make_feature(dir_path, data, flex_name,  flex_style_id)
 
-    return r, s
+    return r, s, f
 
 def generate(args):
     """ 
@@ -47,8 +51,8 @@ def generate(args):
 
     # current schema layers
     data = get_data(schema='current', **vars(args))
-    r, s = generate_config(data, workspace_path, 'current')
-    make_layergroup(workspace_path, data, [r, s], type_name='current_routes_n_stops')
+    r, s, f = generate_config(data, workspace_path, 'current', 'flex')
+    make_layergroup(workspace_path, data, [f, r, s], type_name='current')
 
     # agency layer schema layers
     feed_list = gtfs_utils.get_feeds_from_config()
@@ -56,7 +60,7 @@ def generate(args):
         # step 1: get meta data and name for this feed
         schema_name = gtfs_utils.get_schema_name_from_feed(feed)
         data = get_data(schema=schema_name, **vars(args))
-        r, s = generate_config(data, workspace_path, schema_name)
+        r, s, f = generate_config(data, workspace_path, schema_name)
         routes_layers.append(r)
         stops_layers.append(s)
 
@@ -66,7 +70,7 @@ def generate(args):
     all_layers.extend(stops_layers)
 
     data['workspace'] = None
-    make_layergroup(workspace_path, data, all_layers, type_name='raw_routes_n_stops')
+    make_layergroup(workspace_path, data, all_layers, type_name='raw')
 
 
 def generate_geoserver_config():
