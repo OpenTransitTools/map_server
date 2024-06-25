@@ -1,12 +1,14 @@
 DIR=`dirname $0`
-cd $DIR/../
+. $DIR/base.sh
 
 # clone clean data dir
-DATA_REPO="geoserver_data_dir"
-DATA_REPO_URL="https://github.com/OpenTransitTools/${DATA_REPO}.git"
-git clone $DATA_REPO_URL 2> /dev/null
+if [ ! -d $DATA_REPO_DIR ]; then
+  cmd="git clone $DATA_REPO_URL $DATA_REPO_DIR"
+  echo $cmd
+  eval $cmd 2> /dev/null
+fi
 
 # clean up existing space
 rm -rf data_dir-ollddd
 mv data_dir data_dir-ollddd 2> /dev/null
-cp -r $DATA_REPO/data_dir .
+cp -r $DATA_REPO_DIR/data_dir .
