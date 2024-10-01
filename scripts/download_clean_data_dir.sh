@@ -6,9 +6,12 @@ if [ ! -d $DATA_REPO_DIR ]; then
   cmd="git clone $DATA_REPO_URL $DATA_REPO_DIR"
   echo $cmd
   eval $cmd 2> /dev/null
+else
+  cd $DATA_REPO_DIR
+  git pull
+  cd -
 fi
 
 # clean up existing space
-rm -rf data_dir-ollddd
-mv data_dir data_dir-ollddd 2> /dev/null
-cp -r $DATA_REPO_DIR/data_dir .
+rm -rf $NEW_DATA_DIR
+cp -r $DATA_REPO_DIR/data_dir $NEW_DATA_DIR
