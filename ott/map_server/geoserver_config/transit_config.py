@@ -15,34 +15,51 @@ def make_style_id(name, prefix='ott', suffix='style'):
     return id
 
 
-def generate_config(data, workspace_path, schema_name, flex_name=None):
-    r = s = None
-
-    # step 2: make datasource folder for each schema
+def make_workspace(data, workspace_path, schema_name):
+    # step 1: make datasource folder for each schema
     dir_path = os.path.join(workspace_path, schema_name)
     file_utils.mkdir(dir_path)
 
-    # step 3: make the datastore config for the source
+    # step 2: make the datastore config for the source
     ds_path = os.path.join(dir_path, 'datastore.xml')
     with open(ds_path, 'w+') as f:
         content = Template.data_store(data)
         f.write(content)
 
-    # step 4: make stop and route feature layers
+    # step 3: return the directory path to then write layers to this workspace
+    return dir_path
+
+
+def make_current_config(data, workspace_path, schema_name='current'):
+    dir_path = make_workspace(data, workspace_path, schema_name)
+
+    # step w: make rail layer
+    rail_style_id = make_style_id('rail')
+    t = make_feature(dir_path, data, 'rail', rail_style_id)
+
+    # step x: make route layer
     routes_style_id = make_style_id('routes')
-    stops_style_id = make_style_id('stops')
     r = make_feature(dir_path, data, 'routes', routes_style_id)
+
+    # step y: make stop layer
+    stops_style_id = make_style_id('stops')
     s = make_feature(dir_path, data, 'stops',  stops_style_id)
-    f = None
-    if flex_name:
-        flex_style_id = make_style_id('flex')
-        f = make_feature(dir_path, data, flex_name,  flex_style_id)
+
+    # step z: make flex layer
+    flex_style_id = make_style_id('flex')
+    f = make_feature(dir_path, data, 'flex',  flex_style_id)
+
+    make_layergroup(workspace_path, data, [f, t, r, s], schema_name)
 
     return r, s, f
 
+
 def generate(args):
     """ 
-    gen geoserver stuff
+    gen geoserver layers for gtfsdb
+    layers:
+     - individual layer groups based on each gtfs feed (eg., trimet, ctran, sam, rideconnection, etc...)
+     - current schema rollup
     """
     routes_layers = []  # _layers will store the layers for the layergroups.xml config
     stops_layers = []
@@ -51,16 +68,24 @@ def generate(args):
 
     # current schema layers
     data = get_data(schema='current', **vars(args))
-    r, s, f = generate_config(data, workspace_path, 'current', 'flex')
-    make_layergroup(workspace_path, data, [f, r, s], type_name='current')
+    make_current_config(data, workspace_path)
 
     # agency layer schema layers
     feed_list = gtfs_utils.get_feeds_from_config()
     for feed in feed_list:
-        # step 1: get meta data and name for this feed
+        # step 1: get meta data and name for this feed / workspace
         schema_name = gtfs_utils.get_schema_name_from_feed(feed)
         data = get_data(schema=schema_name, **vars(args))
-        r, s, f = generate_config(data, workspace_path, schema_name)
+        dir_path = make_workspace(data, workspace_path, schema_name)
+
+        # step 2: make route layer
+        routes_style_id = make_style_id('routes')
+        r = make_feature(dir_path, data, 'routes', routes_style_id)
+
+        # step 3: make stop layer
+        stops_style_id = make_style_id('stops')
+        s = make_feature(dir_path, data, 'stops',  stops_style_id)
+
         routes_layers.append(r)
         stops_layers.append(s)
 
@@ -74,9 +99,13 @@ def generate(args):
 
 
 def generate_geoserver_config():
-    """ generate geoserver config for transit """
+    """
+    defacto main statment to generate geoserver data_dir based on config/app.ini 
+    @see generate method above for specifics of what GS layers are being generated
+    """
     from ott.utils.parse.cmdline import osm_cmdline
     from ott.utils import config_util
+
     #import pdb; pdb.set_trace()
     params = ['db_user', 'db_pass', 'db_name', 'db_port', 'db_geoserver']
     def_params = config_util.get_params_from_config(params)
