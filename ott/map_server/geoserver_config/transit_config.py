@@ -33,13 +33,18 @@ def make_workspace(data, workspace_path, schema_name):
 def make_current_config(data, workspace_path, schema_name='current'):
     dir_path = make_workspace(data, workspace_path, schema_name)
 
-    # step w: make rail layer
-    rail_style_id = make_style_id('rail')
-    t = make_feature(dir_path, data, 'rail', rail_style_id)
+    # step w: make patterns layer (this view is K's (+30k) in size, so more for data geom for vehicles, ala
+    #         geoserver/wfs?request=GetFeature&typeName=ott:patterns&outputFormat=json&cql_filter=route_id=1
+    line_style_id = make_style_id('lines')
+    p = make_feature(dir_path, data, 'patterns', line_style_id)
 
     # step x: make route layer
     routes_style_id = make_style_id('routes')
     r = make_feature(dir_path, data, 'routes', routes_style_id)
+
+    # step w: make rail layer
+    rail_style_id = make_style_id('rail')
+    t = make_feature(dir_path, data, 'rail', rail_style_id)
 
     # step y: make stop layer
     stops_style_id = make_style_id('stops')
@@ -51,7 +56,7 @@ def make_current_config(data, workspace_path, schema_name='current'):
 
     make_layergroup(workspace_path, data, [f, t, r, s], schema_name)
 
-    return r, s, f
+    return p, r, t, s, f
 
 
 def generate(args):
