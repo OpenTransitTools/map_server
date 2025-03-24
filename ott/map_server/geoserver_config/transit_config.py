@@ -35,7 +35,7 @@ def make_current_config(data, workspace_path, schema_name='current'):
 
     # step w: make patterns layer (this view is K's (+30k) in size, so more for data geom for vehicles, ala
     #         geoserver/wfs?request=GetFeature&typeName=ott:patterns&outputFormat=json&cql_filter=route_id=1
-    line_style_id = make_style_id('lines')
+    line_style_id = make_style_id('line')
     p = make_feature(dir_path, data, 'patterns', line_style_id)
 
     # step x: make route layer
