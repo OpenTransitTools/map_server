@@ -99,6 +99,7 @@ def generate(args):
     all_layers.extend(routes_layers)
     all_layers.extend(stops_layers)
 
+
     data['workspace'] = None
     make_layergroup(workspace_path, data, all_layers, type_name='raw')
 
@@ -111,14 +112,14 @@ def generate_geoserver_config():
     from ott.utils.parse.cmdline import osm_cmdline
     from ott.utils import config_util
 
-    #import pdb; pdb.set_trace()
     params = ['db_user', 'db_pass', 'db_name', 'db_port', 'db_geoserver']
     def_params = config_util.get_params_from_config(params)
 
-    def_params['workspace'] = def_params.get('db_user', 'ott')
-    def_params['db_url'] = def_params.get('db_geoserver', 'localhost')
+    def_params['workspace'] = def_params.get('db_user')   or 'ott'
+    def_params['db_url'] = def_params.get('db_geoserver') or 'localhost'
     def_params['dir'] = "data_dir"
 
+    #import pdb; pdb.set_trace()
     args = osm_cmdline.geoserver_parser(def_params)
     generate(args)
 
