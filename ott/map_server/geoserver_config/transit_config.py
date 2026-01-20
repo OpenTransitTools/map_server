@@ -109,18 +109,27 @@ def generate_geoserver_config():
     defacto main statment to generate geoserver data_dir based on config/app.ini 
     @see generate method above for specifics of what GS layers are being generated
     """
-    from ott.utils.parse.cmdline import osm_cmdline
-    from ott.utils import config_util
 
+    # note: there are 3 phases of trying to get parameter for the geoserver datastore config...
+
+    # a: try to find a config file that has db params (these are defaults, and might be overwtn by cmdline params)
+    from ott.utils import config_util
     params = ['db_user', 'db_pass', 'db_name', 'db_port', 'db_geoserver']
     def_params = config_util.get_params_from_config(params)
 
-    def_params['workspace'] = def_params.get('db_user')   or 'ott'
-    def_params['db_url'] = def_params.get('db_geoserver') or 'localhost'
+    # b: no config? then guess at some db params (again, these are default that may be overwtn by cmdline params)
+    def_params['db_url'] = def_params.get('db_geoserver')  or 'db'
+    def_params['workspace'] = def_params.get('db_user')    or 'ott'
+    def_params['db_user'] = def_params.get('db_user')      or 'ott'
+    def_params['db_pass'] = def_params.get('db_pass')      or 'ott'
+    def_params['db_port'] = def_params.get('db_port')      or '5432'
     def_params['dir'] = "data_dir"
 
-    #import pdb; pdb.set_trace()
+    # c: get params from the cmdline (or if not, use settings from steps a & b)
+    from ott.utils.parse.cmdline import osm_cmdline
     args = osm_cmdline.geoserver_parser(def_params)
+
+    #import pdb; pdb.set_trace()
     generate(args)
 
 
