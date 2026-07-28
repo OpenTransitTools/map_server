@@ -11,11 +11,13 @@ readme = "README.md"
 packages = [{include = "ott/map_server"}]
 
 [tool.poetry.dependencies]
-python = "^3.6"
+python = "^3.9"
 pystache = "*"
 
 "ott.utils" = {git = "https://github.com/OpenTransitTools/utils.git", branch = "rtp"}
-#convert = {git = "https://github.com/OpenTransitTools/convert.git"}
+convert = {git = "https://github.com/OpenTransitTools/convert.git"}
+#"ott.utils" = { path = "../utils/", develop = true }
+#convert = { path = "../convert/", develop = true }
 
 [build-system]
 requires = ["poetry-core"]
