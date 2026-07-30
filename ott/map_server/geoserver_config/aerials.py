@@ -60,3 +60,4 @@ def generate_geoserver_aerial_config(data_dir="data_dir"):
 
     #import pdb; pdb.set_trace()
     create_coverages_dir(args.data_dir, args.aerials_dir)
+
