@@ -3,7 +3,6 @@ from ott.utils import file_utils
 from .templates.template import Template
 from .base import get_data, make_layergroup, make_feature
 
-import inspect
 import os
 import logging
 log = logging.getLogger(__file__)
@@ -104,7 +103,7 @@ def generate(args):
     make_layergroup(workspace_path, data, all_layers, type_name='raw')
 
 
-def generate_geoserver_config():
+def generate_geoserver_config(data_dir="data_dir"):
     """
     defacto main statment to generate geoserver data_dir based on config/app.ini 
     @see generate method above for specifics of what GS layers are being generated
@@ -123,11 +122,11 @@ def generate_geoserver_config():
     def_params['db_user'] = def_params.get('db_user')      or 'ott'
     def_params['db_pass'] = def_params.get('db_pass')      or 'ott'
     def_params['db_port'] = def_params.get('db_port')      or '5432'
-    def_params['dir'] = "data_dir"
+    def_params['dir'] = data_dir
 
     # c: get params from the cmdline (or if not, use settings from steps a & b)
     from ott.utils.parse.cmdline import osm_cmdline
-    args = osm_cmdline.geoserver_parser(def_params)
+    args = osm_cmdline.geoserver_parser(def_params, "poetry run generate-geoserver-config")
 
     #import pdb; pdb.set_trace()
     generate(args)
