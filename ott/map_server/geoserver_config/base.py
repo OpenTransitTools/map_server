@@ -6,6 +6,12 @@ import logging
 log = logging.getLogger(__file__)
 
 
+def make_style_id(name, prefix='ott', suffix='style'):
+    """ produces ott-routes-style """
+    id = "{}-{}-{}".format(prefix, name, suffix)
+    return id
+
+
 def make_feature(base_dir, data, type_name, style_id):
     """
     make routes feature folder

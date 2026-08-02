@@ -1,17 +1,11 @@
 from ott.utils import gtfs_utils
 from ott.utils import file_utils
 from .templates.template import Template
-from .base import get_data, make_layergroup, make_feature
+from .base import get_data, make_layergroup, make_feature, make_style_id
 
 import os
 import logging
 log = logging.getLogger(__file__)
-
-
-def make_style_id(name, prefix='ott', suffix='style'):
-    """ produces ott-routes-style """
-    id = "{}-{}-{}".format(prefix, name, suffix)
-    return id
 
 
 def make_workspace(data, workspace_path, schema_name):

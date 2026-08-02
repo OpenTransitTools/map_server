@@ -1,0 +1,32 @@
+<!-- write data_dir/gwc-layers/{{layer_id}}.xml -->
+<GeoServerTileLayer>
+  <id>TileLayer_{{layer_id}}</id>
+  <name>{{layer_id}}</name>
+  <enabled>true</enabled>
+  <mimeFormats>
+    <string>image/png</string>
+    <string>image/jpeg</string>
+    <string>application/vnd.mapbox-vector-tile</string>
+    <string>application/json;type=geojson</string>
+  </mimeFormats>
+  <gridSubsets>
+    <gridSubset>
+      <gridSetName>EPSG:4326</gridSetName>
+    </gridSubset>
+    <gridSubset>
+      <gridSetName>EPSG:900913</gridSetName>
+    </gridSubset>
+    <gridSubset>
+      <gridSetName>EPSG:2913</gridSetName>
+    </gridSubset>
+  </gridSubsets>
+  <metaWidthHeight>
+    <int>4</int>
+    <int>4</int>
+  </metaWidthHeight>
+  <gutter>0</gutter>
+  <parameterFilters/>
+  <expireCache>0</expireCache>
+  <expireClients>0</expireClients>
+  <cacheWarningSkips/>
+</GeoServerTileLayer>

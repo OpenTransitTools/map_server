@@ -1,0 +1,29 @@
+<layerGroup>
+  <id>{{workspace}}-layergroup</id>
+  <name>{{workspace}}</name>
+  <mode>SINGLE</mode>
+  <title>{{workspace}}</title>
+  <abstractTxt>{{workspace}}</abstractTxt>
+  <workspace>
+      <id>{{workspace}}</id>
+  </workspace>
+  <publishables>
+    {{#layers}}
+    <published type="{{published_type}}{{^published_type}}layer{{/published_type}}">
+      <id>{{layer_id}}</id>
+    </published>
+    {{/layers}}
+  </publishables>
+  <styles>
+    {{#layers}}
+    <style><id>{{layer_id}}</id></style>
+    {{/layers}}
+  </styles>
+  <bounds>
+    <crs class="org.geotools.referencing.crs.DefaultEngineeringCRS">EPSG:{{epsg}}</crs>
+    <minx>{{minx}}</minx>
+    <maxx>{{maxx}}</maxx>
+    <miny>{{miny}}</miny>
+    <maxy>{{maxy}}</maxy>
+  </bounds>
+</layerGroup>
