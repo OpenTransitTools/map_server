@@ -4,7 +4,6 @@ otp_report.html
 build-config.json
 router-config.json
 lucene
-geoserver*
 data_dir*
 *.old
 *-old
@@ -24,7 +23,6 @@ cache_data
 geoserver/data/layergroups
 geoserver/data/workspaces/osm/*/
 geoserver/data/workspaces/osm/datastore.xml
-geoserver-*/
 geoserver/data/workspaces/ott/
 geoserver/data/gwc*
 geoserver/data/logs

@@ -26,6 +26,7 @@ system-site-packages = true
 
 [tool.poetry.scripts]
 gtfs_feeds = "ott.convert.csv2json.gtfs:gtfs_feed_parser"
-generate-geoserver-config = "ott.map_server.geoserver_config.transit_config:generate_geoserver_config"
+get-agencies = "ott.map_server.geoserver_config.transit:get_agency_list"
+generate-geoserver-config = "ott.map_server.geoserver_config.transit:generate_geoserver_config"
 generate-geoserver-aerial-config = "ott.map_server.geoserver_config.aerials:generate_geoserver_aerial_config"
-get-agencies = "ott.map_server.geoserver_config.transit_config:get_agency_list"
+

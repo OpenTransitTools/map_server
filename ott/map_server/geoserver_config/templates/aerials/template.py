@@ -9,8 +9,8 @@ class Template(TemplateBase):
         return cls.render('coveragestore.mustache', data)
 
     @classmethod
-    def style_config(cls, data):
-        return cls.render('style_config.mustache', data)
+    def coverage(cls, data):
+        return cls.render('coverage.mustache', data)
 
     @classmethod
     def gwc_layer(cls, data):
@@ -22,7 +22,6 @@ class Template(TemplateBase):
 
     @classmethod
     def layer_group(cls, data):
-        """ call the layergroup template"""
         return Template.render('layer_group.mustache', data)
 
 

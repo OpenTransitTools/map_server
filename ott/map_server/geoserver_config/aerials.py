@@ -2,7 +2,7 @@ import os
 from pathlib import Path
 
 from .templates.aerials.template import Template
-from .base import get_data, make_layergroup, make_feature, make_style_id
+from .base import write_file
 
 import logging
 log = logging.getLogger(__file__)
@@ -14,13 +14,27 @@ def make_workspace(data, workspace_path, file_name="coveragestore.xml"):
     Path(dir_path).mkdir(exist_ok=True)
 
     # step 2: make the store config for the source
-    cs_path = os.path.join(dir_path, file_name)
-    with open(cs_path, 'w+') as f:
-        content = Template.coverage_store(data)
-        f.write(content)
+    content = Template.coverage_store(data)
+    write_file(dir_path, file_name, content)
 
     # step 3: return the directory path to then write layers to this workspace
     return dir_path
+
+
+def make_layer(data, layer_dir):
+    """
+    make 2nd layer folder
+    """
+    # step 1: make the layer dir, ala workspaces/aerials/6in/6in/
+    dir_path = os.path.join(layer_dir, data.get('layer_id'))
+    Path(dir_path).mkdir(exist_ok=True)
+
+    # step 2: write the two layer files, ala coverage.xml layer.xml
+    content = Template.coverage(data)
+    write_file(dir_path, "coverage.xml", content)
+
+    content = Template.layer(data)
+    write_file(dir_path, "layer.xml", content)
 
 
 def create_coverages_dir(data_dir, aerials_dir):
@@ -32,6 +46,7 @@ def create_coverages_dir(data_dir, aerials_dir):
     """
     coverage_dir = os.path.join(data_dir, "coverages")
     aerials_link = os.path.join(coverage_dir, os.path.basename(aerials_dir))
+    Path(data_dir).mkdir(exist_ok=True)
     Path(coverage_dir).mkdir(exist_ok=True)
     Path(aerials_link).unlink(missing_ok=True)
     Path(aerials_link).symlink_to(Path(aerials_dir))
@@ -57,8 +72,13 @@ def generate(args, resolutions=["20ft", "10ft", "04ft", "02ft", "01ft", "6in"]):
     """
     layers = []  # layers will store the layers for the layergroups.xml config
     data = {'workspace': args.workspace, 'type_name': 'xxxx', 'style_id': 'yyyy'}
-    workspace_path = os.path.join(args.data_dir, "workspaces", args.workspace)
-    Path(workspace_path).mkdir(exist_ok=True)    
+
+    # step 1: make sure there's a data_dir folder for the layer information
+    workspaces_dir = os.path.join(args.data_dir, "workspaces")
+    workspace_path = os.path.join(workspaces_dir, args.workspace)
+    Path(args.data_dir).mkdir(exist_ok=True)
+    Path(workspaces_dir).mkdir(exist_ok=True)
+    Path(workspace_path).mkdir(exist_ok=True)
 
     for rez in resolutions:
         data['layer_id'] = rez
@@ -67,10 +87,10 @@ def generate(args, resolutions=["20ft", "10ft", "04ft", "02ft", "01ft", "6in"]):
         dir_path = make_workspace(data, workspace_path)
 
         # step 2: make route layer
-        l = make_feature(dir_path, data)
+        l = make_layer(data, dir_path)
         layers.append(l)
 
-    make_layergroup(workspace_path, data, layers, type_name='raw')
+    #make_layergroup(workspace_path, data, layers, type_name=args.workspace)
 
 
 def generate_geoserver_aerial_config(data_dir="data_dir", tiff_dir="aerials"):

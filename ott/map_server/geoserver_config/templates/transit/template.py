@@ -6,27 +6,22 @@ class Template(TemplateBase):
 
     @classmethod
     def data_store(cls, data):
-        """ call the stores template"""
         return cls.render('stores.mustache', data)
 
     @classmethod
     def style_config(cls, data):
-        """ call the style config template"""
         return cls.render('style_config.mustache', data)
 
     @classmethod
     def feature_type(cls, data):
-        """ call the featuretype template"""
         return Template.render('feature_type.mustache', data)
 
     @classmethod
     def layer(cls, data):
-        """ call the layer template"""
         return Template.render('layer.mustache', data)
 
     @classmethod
     def layer_group(cls, data):
-        """ call the layergroup template"""
         return Template.render('layer_group.mustache', data)
 
 

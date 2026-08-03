@@ -1,11 +1,30 @@
 from ott.utils import gtfs_utils
 from ott.utils import file_utils
-from .templates.template import Template
-from .base import get_data, make_layergroup, make_feature, make_style_id
+from .templates.transit.template import Template
+from .base import get_data, make_style_id
 
 import os
 import logging
 log = logging.getLogger(__file__)
+
+
+def make_layergroup(base_dir, data, layers, type_name):
+    """
+    make layergroup
+    """
+    # step 1: make feature dir
+    layergroup_path = os.path.join(base_dir, 'layergroups')
+    file_utils.mkdir(layergroup_path)
+
+    # step 2: content
+    data['type'] = type_name
+    data['layers'] = layers
+
+    # step 3: add layer.xml for this feature
+    xml_path = os.path.join(layergroup_path, type_name + '.xml')
+    with open(xml_path, 'w+') as f:
+        content = Template.layer_group(data)
+        f.write(content)
 
 
 def make_workspace(data, workspace_path, schema_name):
@@ -21,6 +40,36 @@ def make_workspace(data, workspace_path, schema_name):
 
     # step 3: return the directory path to then write layers to this workspace
     return dir_path
+
+
+
+def make_feature(base_dir, data, type_name, style_id):
+    """
+    make routes feature folder
+    """
+    # step 1: make feature dir
+    feature_path = os.path.join(base_dir, type_name)
+    file_utils.mkdir(feature_path)
+
+    # step 2: content
+    data['type'] = type_name
+    data['style'] = style_id
+
+    # step 3: add featuretype.xml for this feature
+    data['featuretype_id'] = "{}-{}-{}-featuretype".format(data['db_name'], data['schema'], type_name)
+    type_path = os.path.join(feature_path, 'featuretype.xml')
+    with open(type_path, 'w+') as f:
+        content = Template.feature_type(data)
+        f.write(content)
+
+    # step 4: add layer.xml for this feature
+    data['layer_id'] = "{}-{}-{}-layer".format(data['db_name'], data['schema'], type_name)
+    layer_path = os.path.join(feature_path, 'layer.xml')
+    with open(layer_path, 'w+') as f:
+        content = Template.layer(data)
+        f.write(content)
+
+    return {'layer_id': data['layer_id'], 'style_id': style_id}
 
 
 def make_current_config(data, workspace_path, schema_name='current'):
@@ -111,7 +160,7 @@ def generate_geoserver_config(data_dir="data_dir"):
     def_params = config_util.get_params_from_config(params)
 
     # b: no config? then guess at some db params (again, these are default that may be overwtn by cmdline params)
-    def_params['db_url'] = def_params.get('db_geoserver')  or 'db'
+    def_params['db_url'] = def_params.get('db_geoserver')  or 'localhost'
     def_params['workspace'] = def_params.get('db_user')    or 'ott'
     def_params['db_user'] = def_params.get('db_user')      or 'ott'
     def_params['db_pass'] = def_params.get('db_pass')      or 'ott'
