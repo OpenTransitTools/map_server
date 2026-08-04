@@ -8,16 +8,45 @@ import logging
 log = logging.getLogger(__file__)
 
 
-def make_workspace(data, workspace_path, file_name="coveragestore.xml"):
-    # step 1: make datasource folder for each schema
+def create_coverages_dir(workspace_dir, aerials_dir):
+    """
+    add a softlink to the top level folder containing the .tiff files, 
+    ala ln -s ~/aerials workspace/aerials/data
+    """
+    Path(workspace_dir).mkdir(exist_ok=True)
+    aerials_link = os.path.join(workspace_dir, "data")
+    Path(aerials_link).unlink(missing_ok=True)
+    Path(aerials_link).symlink_to(Path(aerials_dir))
+
+
+def create_workspace(data, workspaces_dir):
+    from .templates.base_template import BaseTemplate
+
+    # step 1: make the necessary workspace dirs, ala workspace/aerials
+    aerials_workspace = os.path.join(workspaces_dir, data.get('workspace'))
+    Path(aerials_workspace).mkdir(exist_ok=True)
+
+    # step 2: make the workspace.xml file
+    content = BaseTemplate.workspace(data)
+    write_file(aerials_workspace, "workspace.xml", content)
+
+    # step 3: make the workspace.xml file
+    content = BaseTemplate.namespace(data)
+    write_file(aerials_workspace, "namespace.xml", content)
+
+    return aerials_workspace
+
+
+def make_store(data, workspace_path, file_name="coveragestore.xml"):
+    # step 1: make datasource folder
     dir_path = os.path.join(workspace_path, data.get('layer_id'))
     Path(dir_path).mkdir(exist_ok=True)
 
-    # step 2: make the store config for the source
+    # step 3: make the store config for the source
     content = Template.coverage_store(data)
     write_file(dir_path, file_name, content)
 
-    # step 3: return the directory path to then write layers to this workspace
+    # step 4: return the directory path to then write layers to this workspace
     return dir_path
 
 
@@ -35,21 +64,6 @@ def make_layer(data, layer_dir):
 
     content = Template.layer(data)
     write_file(dir_path, "layer.xml", content)
-
-
-def create_coverages_dir(data_dir, aerials_dir):
-    """
-    does 2 things:
-      1. create the data_dir/coverages folder
-      2. create a soft link in data_dir/coverages to the geotiff 'aerials_dir' 
-         (e.g., ln -s ~/aerials data_dir/coverages/aerials)
-    """
-    coverage_dir = os.path.join(data_dir, "coverages")
-    aerials_link = os.path.join(coverage_dir, os.path.basename(aerials_dir))
-    Path(data_dir).mkdir(exist_ok=True)
-    Path(coverage_dir).mkdir(exist_ok=True)
-    Path(aerials_link).unlink(missing_ok=True)
-    Path(aerials_link).symlink_to(Path(aerials_dir))
 
 
 def create_coverage_layer():
@@ -75,18 +89,21 @@ def generate(args, resolutions=["20ft", "10ft", "04ft", "02ft", "01ft", "6in"]):
 
     # step 1: make sure there's a data_dir folder for the layer information
     workspaces_dir = os.path.join(args.data_dir, "workspaces")
-    workspace_path = os.path.join(workspaces_dir, args.workspace)
     Path(args.data_dir).mkdir(exist_ok=True)
     Path(workspaces_dir).mkdir(exist_ok=True)
-    Path(workspace_path).mkdir(exist_ok=True)
 
+    # step 2: create workspace.xml, namespace.xml and link to .tiff files
+    aerials_workspace = create_workspace(data, workspaces_dir)
+    create_coverages_dir(aerials_workspace, args.aerials_dir)
+
+    # step 3: make the layers for each resoution of .tiff files
     for rez in resolutions:
         data['layer_id'] = rez
 
-        # step 1: get meta data and name for this feed / workspace
-        dir_path = make_workspace(data, workspace_path)
+        # step 3a: get meta data and name for this feed / workspace
+        dir_path = make_store(data, aerials_workspace)
 
-        # step 2: make route layer
+        # step 3b: make route layer
         l = make_layer(data, dir_path)
         layers.append(l)
 
@@ -114,6 +131,5 @@ def generate_geoserver_aerial_config(data_dir="data_dir", tiff_dir="aerials"):
     args = parser.parse_args()
 
     #import pdb; pdb.set_trace()
-    create_coverages_dir(args.data_dir, args.aerials_dir)
     generate(args)
 

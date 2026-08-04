@@ -27,12 +27,7 @@ class Template(TemplateBase):
 
 def main():
     # bin/python ott/map_server/geoserver_config/templates/template.py
-
-    data = {'id': 'FX', 'name': 'Frank X', 'type': 'sub-human', 'path': 'crooked'}
-    #p = Template.render('style_config', data)
-    #p = Template.render('style_config.mustache', data)
-    #p = Template.render('ott/map_server/geoserver_config/templates/style_config', data)
-    #p = Template.render('id {{id}} ... name {{name}}', data)
+    data = {'workspace': 'aerial'}
     p = Template.style_config(data)
     print(p)
 
