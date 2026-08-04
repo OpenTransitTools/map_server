@@ -85,6 +85,16 @@ def make_layergroup(data, workspace_dir):
     write_file(dir_path, f"{data.get('workspace')}.xml", content)
 
 
+def make_gwc_layer(data, data_dir):
+    # step 1: make the gwc-layers dir
+    dir_path = os.path.join(data_dir, "gwc-layers")
+    Path(dir_path).mkdir(exist_ok=True)
+
+    # step 2: create the gwc-layer for our coverage, ala workspaces/gwc-layers/aerials.xml
+    content = Template.gwc_layer(data)
+    write_file(dir_path, f"{data.get('workspace')}.xml", content)
+
+
 def generate(args, resolutions=["20ft", "10ft", "04ft", "02ft", "01ft", "6in"]):
     """ 
     gen geoserver aerial layer
@@ -115,6 +125,7 @@ def generate(args, resolutions=["20ft", "10ft", "04ft", "02ft", "01ft", "6in"]):
 
     data['resolutions'] = resolutions
     make_layergroup(data, aerials_workspace)
+    make_gwc_layer(data, args.data_dir)
 
 
 def generate_geoserver_aerial_config(data_dir="data_dir", tiff_dir="aerials"):

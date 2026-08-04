@@ -1,13 +1,10 @@
-<!-- write data_dir/gwc-layers/{{layer_id}}.xml -->
 <GeoServerTileLayer>
-  <id>TileLayer-{{workspace}}:{{layer_id}}</id>
-  <name>{{workspace}}:{{layer_id}}</name>
+  <id>LayerGroup-{{workspace}}</id>
+  <name>{{workspace}}:{{workspace}}</name>
   <enabled>true</enabled>
   <mimeFormats>
     <string>image/png</string>
     <string>image/jpeg</string>
-    <string>application/vnd.mapbox-vector-tile</string>
-    <string>application/json;type=geojson</string>
   </mimeFormats>
   <gridSubsets>
     <gridSubset>

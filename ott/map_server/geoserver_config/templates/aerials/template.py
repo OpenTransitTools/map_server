@@ -24,6 +24,10 @@ class Template(TemplateBase):
     def layer_group(cls, data):
         return Template.render('layer_group.mustache', data)
 
+    @classmethod
+    def gwc_layer(cls, data):
+        return Template.render('gwc_layer.mustache', data)
+
 
 def main():
     # bin/python ott/map_server/geoserver_config/templates/template.py
