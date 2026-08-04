@@ -5,25 +5,34 @@
   <abstractTxt>{{workspace}}</abstractTxt>
   <mode>SINGLE</mode>
   <workspace>
-      <id>{{workspace}}</id>
+      <id>Workspace-{{workspace}}</id>
   </workspace>
+  <internationalTitle/>
+  <internationalAbstract/>
   <publishables>
-    {{#layers}}
-    <published type="{{published_type}}{{^published_type}}layer{{/published_type}}">
-      <id>{{layer_id}}</id>
+    {{#resolutions}}
+    <published>
+      <id>Layer-{{workspace}}-{{.}}</id>
     </published>
-    {{/layers}}
+    {{/resolutions}}
   </publishables>
   <styles>
-    {{#layers}}
-    <style><id>{{layer_id}}</id></style>
-    {{/layers}}
+    {{#resolutions}}
+    <style><id>Style-{{.}}</id></style>
+    {{/resolutions}}
   </styles>
   <bounds>
-    <crs class="org.geotools.referencing.crs.DefaultEngineeringCRS">EPSG:{{epsg}}</crs>
-    <minx>{{minx}}</minx>
-    <maxx>{{maxx}}</maxx>
-    <miny>{{miny}}</miny>
-    <maxy>{{maxy}}</maxy>
-  </bounds>
+    <minx>7511099.0</minx>
+    <maxx>7763451.0</maxx>
+    <miny>566249.0</miny>
+    <maxy>747597.0</maxy>
+    <crs class="projected">EPSG:2913</crs>
+  </bounds>  
+  <metadata>
+    <entry key="cachingEnabled">false</entry>
+  </metadata>
+  <attribution>
+    <logoWidth>0</logoWidth>
+    <logoHeight>0</logoHeight>
+  </attribution>
 </layerGroup>
