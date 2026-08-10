@@ -12,6 +12,7 @@ def create_coverages_dir(workspace_dir, aerials_dir):
     """
     add a softlink to the top level folder containing the .tiff files, 
     ala ln -s ~/aerials workspace/aerials/data
+    (note: not used atm)
     """
     Path(workspace_dir).mkdir(exist_ok=True)
     aerials_link = os.path.join(workspace_dir, "data")
@@ -102,7 +103,7 @@ def generate(args, resolutions=["20ft", "10ft", "04ft", "02ft", "01ft", "6in"]):
      - individual layer groups based on each gtfs feed (eg., trimet, ctran, sam, rideconnection, etc...)
      - current schema rollup
     """
-    data = {'workspace': args.workspace}
+    data = {'workspace': args.workspace, 'ortho_dir': args.ortho_dir}
 
     # step 1: make sure there's a data_dir folder for the layer information
     workspaces_dir = os.path.join(args.data_dir, "workspaces")
@@ -111,14 +112,14 @@ def generate(args, resolutions=["20ft", "10ft", "04ft", "02ft", "01ft", "6in"]):
 
     # step 2: create workspace.xml, namespace.xml and link to .tiff files
     aerials_workspace = create_workspace(data, workspaces_dir)
-    create_coverages_dir(aerials_workspace, args.aerials_dir)
+    #create_coverages_dir(aerials_workspace, args.aerials_dir) # no longer used, switched to file:////srv/geoserver/ortho absolute path
 
     # step 3: make the layers for each resoution of .tiff files
     for rez in resolutions:
         data['layer_id'] = rez
 
         # step 3a: get meta data and name for this feed / workspace
-        dir_path = make_store(data, aerials_workspace)
+        dir_path = make_store(data, aerials_workspace, )
 
         # step 3b: make route layer
         l = make_layer(data, dir_path)
@@ -128,23 +129,26 @@ def generate(args, resolutions=["20ft", "10ft", "04ft", "02ft", "01ft", "6in"]):
     make_gwc_layer(data, args.data_dir)
 
 
-def generate_geoserver_aerial_config(data_dir="data_dir", tiff_dir="aerials"):
+def generate_geoserver_aerial_config(data_dir="data_dir", workspace="aerials", ortho_dir="ortho"):
     """
     defacto main statment to generate the config for aerials in the geoserver data_dir
+    
     """
     def_params = {}
     def_params['dir'] = data_dir
-    def_params['workspace'] = tiff_dir
+    def_params['workspace'] = workspace
+    def_ortho_dir = os.path.join(Path.home(), ortho_dir)
 
     from ott.utils.parse.cmdline import osm_cmdline
     parser = osm_cmdline.geoserver_parser(def_params, "poetry run generate-geoserver-aerial-config", False)
     parser.add_argument(
-        '--aerials_dir',
-        '-aerials',
-        '-ad',
+        '--ortho_dir',
+        '-ortho',
+        '-od',
         required=False,
-        default=os.path.join(Path.home(), tiff_dir),
-        help="the directory where the geotiff aerials live"
+        default=def_ortho_dir,
+        help=f"full path to where the geotiff aerials_rtp folder lives, ala {def_ortho_dir}/aerials_rtp/20ft should be a valid path"
+        # template builds paths like file:///srv/geoserver/ortho/aerials_rtp/6in, ala /<tiff_dir_path>/<workspace>/<layer_id>
     )
     args = parser.parse_args()
 

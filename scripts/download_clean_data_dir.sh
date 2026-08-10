@@ -34,6 +34,7 @@ echo "$PWD/" >> .git/info/sparse-checkout
 sleep 2
 
 cmd="git pull origin main"
+#cmd="git pull origin aerials"  # special branch
 echo $cmd
 eval $cmd
 
