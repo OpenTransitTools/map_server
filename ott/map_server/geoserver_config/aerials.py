@@ -119,7 +119,7 @@ def generate(args, resolutions=["20ft", "10ft", "04ft", "02ft", "01ft", "6in"]):
         data['layer_id'] = rez
 
         # step 3a: get meta data and name for this feed / workspace
-        dir_path = make_store(data, aerials_workspace, )
+        dir_path = make_store(data, aerials_workspace)
 
         # step 3b: make route layer
         l = make_layer(data, dir_path)
