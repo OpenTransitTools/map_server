@@ -42,7 +42,6 @@ def make_workspace(data, workspace_path, schema_name):
     return dir_path
 
 
-
 def make_feature(base_dir, data, type_name, style_id):
     """
     make routes feature folder
