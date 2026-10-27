@@ -12,7 +12,7 @@ def write_file(dir_path, file_name, content):
 
 
 def make_style_id(name, prefix='ott', suffix='style'):
-    """ produces ott-routes-style """
+    """ produces ott-<name>-style, ala ott-routes-style """
     id = "{}-{}-{}".format(prefix, name, suffix)
     return id
 

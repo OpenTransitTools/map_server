@@ -3,6 +3,7 @@ ott.openlayers.*
 otp_report.html
 build-config.json
 router-config.json
+geoserver
 lucene
 data_dir*
 *.old

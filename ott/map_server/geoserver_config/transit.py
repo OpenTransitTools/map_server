@@ -127,19 +127,27 @@ def generate(args):
         # step 2: make route layer
         routes_style_id = make_style_id('routes')
         r = make_feature(dir_path, data, 'routes', routes_style_id)
+        routes_layers.append(r)
 
         # step 3: make stop layer
         stops_style_id = make_style_id('stops')
         s = make_feature(dir_path, data, 'stops',  stops_style_id)
-
-        routes_layers.append(r)
         stops_layers.append(s)
+
+        # step 4: make misc layers from config (assume they all have a named style)
+        if feed.get('layers'):
+            for l in feed.get('layers'):
+                # TODO: add ott/styles/ada.css+xml and ott/styles/service_district.css+xml to geoserver_data_dir
+                style_id = make_style_id(l)
+                # TODO: rename "StyleInfoImpl--570ae188:124761b8d78:-7fe0" to rectangle-style in geoserver_data_dir
+                #       (also clean up the default styles)
+                style_id = "StyleInfoImpl--570ae188:124761b8d78:-7fe0"
+                make_feature(dir_path, data, l,  style_id)
 
     # make inclusive layergroups
     all_layers = []
     all_layers.extend(routes_layers)
     all_layers.extend(stops_layers)
-
 
     data['workspace'] = None
     make_layergroup(workspace_path, data, all_layers, type_name='raw')
@@ -178,7 +186,10 @@ def get_agency_list():
     feed_list = gtfs_utils.get_feeds_from_config()
     list = []
     for f in feed_list:
+        #import pdb; pdb.set_trace()
         s = gtfs_utils.get_schema_name_from_feed(f)
+        if f.get('layers'):
+            s = f"{s}({f.get('layers')})"
         list.append(s)
 
     print(list)

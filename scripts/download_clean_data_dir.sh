@@ -1,7 +1,6 @@
 DIR=`dirname $0`
 . $DIR/base.sh
 
-
 echo
 echo "MAKE CLEAN ${GS_DATA_DIR} in $PWD"
 echo
@@ -35,6 +34,7 @@ sleep 2
 
 #cmd="git pull origin main"
 cmd="git pull origin aerials"  # special branch
+cmd="git pull origin JAN_2026"
 echo $cmd
 eval $cmd
 
