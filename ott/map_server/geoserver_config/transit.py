@@ -134,9 +134,10 @@ def generate(args):
         s = make_feature(dir_path, data, 'stops',  stops_style_id)
         stops_layers.append(s)
 
-        # step 4: make misc layers from config (assume they all have a named style)
+        # step 4: make misc layers from config ala app.ini has feeds[{trimet, layers:[ada, service_district]}]
         if feed.get('layers'):
             for l in feed.get('layers'):
+                # assume the layer has a named style in the geoserver_data_dir config
                 # TODO: add ott/styles/ada.css+xml and ott/styles/service_district.css+xml to geoserver_data_dir
                 style_id = make_style_id(l)
                 # TODO: rename "StyleInfoImpl--570ae188:124761b8d78:-7fe0" to rectangle-style in geoserver_data_dir
