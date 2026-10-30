@@ -1,8 +1,10 @@
 DIR=`dirname $0`
 . $DIR/base.sh
 
+git_branch=${1:-"main"}
+
 echo
-echo "MAKE CLEAN ${GS_DATA_DIR} in $PWD"
+echo "MAKE CLEAN ${GS_DATA_DIR} from branch ${git_branch} in $PWD"
 echo
 
 # bkup any old data dir
@@ -32,9 +34,7 @@ echo "$PWD/ >> .git/info/sparse-checkout"
 echo "$PWD/" >> .git/info/sparse-checkout
 sleep 2
 
-#cmd="git pull origin main"
-cmd="git pull origin aerials"  # special branch
-cmd="git pull origin JAN_2026"
+cmd="git pull origin ${git_branch}"
 echo $cmd
 eval $cmd
 
