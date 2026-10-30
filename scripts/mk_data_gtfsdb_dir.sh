@@ -16,3 +16,5 @@ if [ $ac -gt $bc ]; then
 else
   echo "fail: data_dir $bc v. $ac files"
 fi
+
+ls ${GS_DATA_DIR}/workspaces
