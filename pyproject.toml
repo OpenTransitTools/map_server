@@ -3,7 +3,7 @@ virtualenvs.options.system-site-packages = true
 
 [tool.poetry]
 name = "map_server"
-version = "0.0.1"
+version = "0.0.2"
 description = "geoserver data_dir generation in support of gtfsdb transit layers"
 authors = ["Frank Purcell <fxpurcell@gmail.com>"]
 license = "Mozella 2.x"
@@ -11,7 +11,7 @@ readme = "README.md"
 packages = [{include = "ott/map_server"}]
 
 [tool.poetry.dependencies]
-python = "^3.9"
+python = "^3.12"
 pystache = "*"
 
 "ott.utils" = {git = "https://github.com/OpenTransitTools/utils.git", branch = "rtp"}
@@ -29,4 +29,5 @@ gtfs_feeds = "ott.convert.csv2json.gtfs:gtfs_feed_parser"
 get-agencies = "ott.map_server.geoserver_config.transit:get_agency_list"
 generate-geoserver-config = "ott.map_server.geoserver_config.transit:generate_geoserver_config"
 generate-geoserver-aerial-config = "ott.map_server.geoserver_config.aerials:generate_geoserver_aerial_config"
+generate-geoserver-layer = "ott.map_server.geoserver_config.transit:generate_geoserver_layer"
 

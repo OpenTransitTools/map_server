@@ -154,12 +154,20 @@ def generate(args):
     make_layergroup(workspace_path, data, all_layers, type_name='raw')
 
 
-def generate_geoserver_config(data_dir="data_dir"):
-    """
-    defacto main statment to generate geoserver data_dir based on config/app.ini 
-    @see generate method above for specifics of what GS layers are being generated
-    """
+def get_agency_list():
+    feed_list = gtfs_utils.get_feeds_from_config()
+    list = []
+    for f in feed_list:
+        #import pdb; pdb.set_trace()
+        s = gtfs_utils.get_schema_name_from_feed(f)
+        if f.get('layers'):
+            s = f"{s}({f.get('layers')})"
+        list.append(s)
 
+    print(list)
+
+
+def get_def_params(data_dir="data_dir"):
     # note: there are 3 phases of trying to get parameter for the geoserver datastore config...
 
     # a: try to find a config file that has db params (these are defaults, and might be overwtn by cmdline params)
@@ -175,6 +183,18 @@ def generate_geoserver_config(data_dir="data_dir"):
     def_params['db_port'] = def_params.get('db_port')      or '5432'
     def_params['dir'] = data_dir
 
+    # c: cmdline can override the def_params config
+    return def_params
+
+
+def generate_geoserver_config(data_dir="data_dir"):
+    """
+    defacto main statment to generate geoserver data_dir based on config/app.ini 
+    @see generate method above for specifics of what GS layers are being generated
+    """
+    # a & b - see above
+    def_params = get_def_params(data_dir)
+
     # c: get params from the cmdline (or if not, use settings from steps a & b)
     from ott.utils.parse.cmdline import osm_cmdline
     args = osm_cmdline.geoserver_parser(def_params, "poetry run generate-geoserver-config")
@@ -183,14 +203,36 @@ def generate_geoserver_config(data_dir="data_dir"):
     generate(args)
 
 
-def get_agency_list():
-    feed_list = gtfs_utils.get_feeds_from_config()
-    list = []
-    for f in feed_list:
-        #import pdb; pdb.set_trace()
-        s = gtfs_utils.get_schema_name_from_feed(f)
-        if f.get('layers'):
-            s = f"{s}({f.get('layers')})"
-        list.append(s)
+def generate_geoserver_layer(data_dir="data_dir"):
+    from ott.utils.parse.cmdline import osm_cmdline
+    def_params = get_def_params(data_dir)
+    parser = osm_cmdline.geoserver_parser(def_params, "poetry run generate-geoserver-layer", False)
+    parser.add_argument(
+        '--layer_name',
+        '-layer',
+        '-l',
+        required=True,
+        help=f"name of the layer to create"
+    )
+    parser.add_argument(
+        '--schema_name',
+        '-schema',
+        '-s',
+        required=False,
+        default="current",
+        help=f"name of the schema, ala <schema>.<layer>"
+    )
+    parser.add_argument(
+        '--style_name',
+        '-style',
+        '-st',
+        required=False,
+        help=f"name of the style"
+    )
+    args = parser.parse_args()
 
-    print(list)
+    workspace_path = os.path.join(args.data_dir, "workspaces", args.workspace)
+    dir_path = os.path.join(workspace_path, args.schema_name)
+    data = get_data(schema=args.schema_name, **vars(args))
+    style_id = make_style_id(args.style_name or args.layer_name)
+    make_feature(dir_path, data, args.layer_name, style_id)
