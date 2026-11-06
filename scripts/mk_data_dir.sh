@@ -3,11 +3,12 @@ DIR=`dirname $0`
 
 git_branch=${1:-"main"}
 
-echo "creating a new geoserver data-dir named '${GS_DATA_DIR}'"
+# generate the data_dir in this specific place, so all config runs get into same data_dir
+cd $DIR/..
+
+echo "creating a new geoserver data-dir named '${PWD}/${GS_DATA_DIR}'"
 $DIR/download_clean_data_dir.sh ${git_branch}
 bc=`find ${GS_DATA_DIR} | wc -l`
-cd $DIR/..
-git pull > /dev/null 2>&1
 
 # informational (eg reflect agencies list from config, ala ~/app.ini)
 poetry run get-agencies
@@ -18,7 +19,9 @@ poetry run generate-geoserver-config
 # generate data_dir/workspace/aerails (Metro only) and aerails_rtp (Metro, Oregon, Clark Co) .. see ~/ortho/ dir
 poetry run generate-geoserver-aerial-config -workspace aerials
 poetry run generate-geoserver-aerial-config -workspace aerials_rtp
-cd -
+
+# generate additional gs layers based on .shp files
+$DIR/shps_to_layers.sh
 
 # more info ... tell us how many new files were created from above
 ac=`find ${GS_DATA_DIR} | wc -l`
@@ -29,3 +32,5 @@ else
 fi
 
 ls ${GS_DATA_DIR}/workspaces
+
+echo "result: '${PWD}/${GS_DATA_DIR}' "

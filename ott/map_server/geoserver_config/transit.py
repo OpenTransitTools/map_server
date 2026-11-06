@@ -42,7 +42,7 @@ def make_workspace(data, workspace_path, schema_name):
     return dir_path
 
 
-def make_feature(base_dir, data, type_name, style_id):
+def make_feature(base_dir, data, type_name, style_id, complex_name=True):
     """
     make routes feature folder
     """
@@ -51,6 +51,7 @@ def make_feature(base_dir, data, type_name, style_id):
     file_utils.mkdir(feature_path)
 
     # step 2: content
+    data['name'] = f"{data['schema']}_{type_name}" if complex_name else f"{type_name}"
     data['type'] = type_name
     data['style'] = style_id
 
@@ -229,10 +230,19 @@ def generate_geoserver_layer(data_dir="data_dir"):
         required=False,
         help=f"name of the style"
     )
+    parser.add_argument(
+        '--simple_name',
+        '-simple',
+        '-simp',
+        '-sn',
+        required=False,
+        action='store_false',
+        help=f"name of the style"
+    )
     args = parser.parse_args()
 
     workspace_path = os.path.join(args.data_dir, "workspaces", args.workspace)
     dir_path = os.path.join(workspace_path, args.schema_name)
     data = get_data(schema=args.schema_name, **vars(args))
     style_id = make_style_id(args.style_name or args.layer_name)
-    make_feature(dir_path, data, args.layer_name, style_id)
+    make_feature(dir_path, data, args.layer_name, style_id, args.simple_name)
