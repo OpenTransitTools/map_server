@@ -6,8 +6,11 @@ git_branch=${1:-"main"}
 # generate the data_dir in this specific place, so all config runs get into same data_dir
 cd $DIR/..
 
-echo "creating a new geoserver data-dir named '${PWD}/${GS_DATA_DIR}'"
-$DIR/download_clean_data_dir.sh ${git_branch}
+# download new / clean data_dir
+if [ ! -d "${GS_DATA_DIR}" ] || [ "$git_branch" != "NONE" ]; then
+  echo "creating a new geoserver data dir named '${PWD}/${GS_DATA_DIR}'"
+  $DIR/download_clean_data_dir.sh "$git_branch"
+fi
 bc=`find ${GS_DATA_DIR} | wc -l`
 
 # informational (eg reflect agencies list from config, ala ~/app.ini)
