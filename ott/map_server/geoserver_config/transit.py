@@ -84,10 +84,6 @@ def make_current_config(data, workspace_path, schema_name='current'):
     routes_style_id = make_style_id('routes')
     r = make_feature(dir_path, data, 'routes', routes_style_id)
 
-    # step w: make rail layer
-    rail_style_id = make_style_id('rail')
-    t = make_feature(dir_path, data, 'rail', rail_style_id)
-
     # step y: make stop layer
     stops_style_id = make_style_id('stops')
     s = make_feature(dir_path, data, 'stops',  stops_style_id)
@@ -96,9 +92,9 @@ def make_current_config(data, workspace_path, schema_name='current'):
     flex_style_id = make_style_id('flex')
     f = make_feature(dir_path, data, 'flex',  flex_style_id)
 
-    make_layergroup(workspace_path, data, [f, t, r, s], schema_name)
+    make_layergroup(workspace_path, data, [f, r, s], schema_name)
 
-    return p, r, t, s, f
+    return p, r, s, f
 
 
 def generate(args):
