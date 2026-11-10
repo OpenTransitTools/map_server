@@ -27,7 +27,7 @@ function shp_to_gs() {
       schema=$parent_dir
     fi
 
-    layer=${s%.shp}
+    layer=${s%.sql}
     layer=${layer##*/}
     style_name=$layer
     if [ $style_name_override ]; then
@@ -40,5 +40,5 @@ function shp_to_gs() {
   done
 }
 
-shp_to_gs "$SHP_DIR/*.shp"        # use simple names, ala "taxlots" (not "current_taxlots")
-shp_to_gs "$SHP_DIR/*/*.shp" " "  # use complex layer names, ala trimet_ada 
+shp_to_gs "$SHP_DIR/*.sql"        # use simple names, ala "taxlots" (not "current_taxlots")
+shp_to_gs "$SHP_DIR/*/*.sql" " "  # use complex layer names, ala trimet_ada
